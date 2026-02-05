@@ -64,7 +64,7 @@ if __name__ == "__main__":
 * **Transparently handles data transmission, caching, and synchronization**.
 * **Supports various distributed computing backends**:
   * Python's built-in [multiprocessing module](https://docs.python.org/3/library/multiprocessing.html).
-  * [Scaler](https://github.com/citi/scaler).
+  * [Scaler](https://github.com/finos/opengris-scaler/).
   * [Dask](https://www.dask.org/).
 
 ## Quick Start
