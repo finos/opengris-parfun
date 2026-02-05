@@ -117,7 +117,7 @@ class TestDecorators(unittest.TestCase):
             for parent_pid, child_pid in pids:
                 self.assertEqual(parent_pid, child_pid)
 
-        with pf.set_parallel_backend_context("scaler_local", n_workers=2, per_worker_queue_size=10):
+        with pf.set_parallel_backend_context("scaler_local", n_workers=2, per_worker_task_queue_size=10):
             # When the backend supports nested tasks, the child tasks should execute on different processes.
 
             self.assertTrue(pf.get_parallel_backend().allows_nested_tasks())
