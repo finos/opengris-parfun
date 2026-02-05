@@ -29,7 +29,7 @@ try:
     BACKEND_REGISTRY["dask_remote"] = DaskRemoteClusterBackend
     BACKEND_REGISTRY["dask_current"] = DaskCurrentBackend
 except ImportError:
-    logging.debug("Dask backends disabled. Use `pip install 'parfun[dask]'` to install Dask dependencies.")
+    logging.debug("Dask backends disabled. Use `pip install 'opengris-parfun[dask]'` to install Dask dependencies.")
 
 try:
     from parfun.backend.scaler import ScalerLocalBackend, ScalerRemoteBackend
@@ -38,7 +38,9 @@ try:
     BACKEND_REGISTRY["scaler_remote"] = ScalerRemoteBackend
 
 except ImportError:
-    logging.debug("Scaler backends disabled. Use `pip install 'parfun[scaler]'` to install Scaler dependencies.")
+    logging.debug(
+        "Scaler backends disabled. Use `pip install 'opengris-parfun[scaler]'` to install Scaler dependencies."
+    )
 
 
 def set_parallel_backend(backend: Union[str, BackendEngine], *args, **kwargs) -> None:

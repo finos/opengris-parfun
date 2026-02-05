@@ -10,7 +10,7 @@ try:
     from scaler.client.future import ScalerFuture
     from scaler.client.object_reference import ObjectReference
 except ImportError:
-    raise ImportError("Scaler dependency missing. Use `pip install 'parfun[scaler]'` to install Scaler.")
+    raise ImportError("Scaler dependency missing. Use `pip install 'opengris-parfun[scaler]'` to install Scaler.")
 
 import psutil
 

@@ -31,11 +31,11 @@ Not all tasks can be easily parallelized:
 Setup and backend selection
 ---------------------------
 
-First, install the ``parfun`` package from PyPI using any compatible package manager:
+First, install the ``opengris-parfun`` package from PyPI using any compatible package manager:
 
 .. code:: bash
 
-    pip install parfun
+    pip install opengris-parfun
 
 
 The above command will **only install the base package**. This is suitable for using the ``multiprocessing`` backend, however
@@ -44,7 +44,7 @@ install the `scaler`, `dask`, or `pandas` extras as required:
 
 .. code:: bash
 
-    pip install "parfun[dask,scaler,pandas]"
+    pip install "opengris-parfun[dask,scaler,pandas]"
 
 **Initializing the library**
 
