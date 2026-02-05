@@ -170,7 +170,7 @@ class ScalerLocalBackend(ScalerRemoteBackend):
         self,
         scheduler_address: Optional[str] = None,
         n_workers: int = psutil.cpu_count(logical=False) - 1,
-        per_worker_queue_size: int = 1000,
+        per_worker_task_queue_size: int = 1000,
         allows_nested_tasks: bool = True,
         logging_paths: Tuple[str, ...] = ("/dev/stdout",),
         logging_level: str = "INFO",
@@ -191,7 +191,7 @@ class ScalerLocalBackend(ScalerRemoteBackend):
             logging_paths=logging_paths,
             logging_level=logging_level,
             logging_config_file=logging_config_file,
-            per_worker_queue_size=per_worker_queue_size,
+            per_worker_task_queue_size=per_worker_task_queue_size,
             **{kwarg: value for kwarg, value in kwargs.items() if kwarg in scheduler_cluster_combo_kwargs},
         )
         scheduler_address = self._cluster.get_address()

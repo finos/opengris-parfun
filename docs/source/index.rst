@@ -9,7 +9,7 @@ using Parfun.
 
 Parfun supports multiple execution backends, including Python's built-in
 `multiprocessing <https://docs.python.org/3/library/multiprocessing.html>`_, as well as
-`Scaler <https://github.com/Citi/scaler>`_ and `Dask <https://www.dask.org/>`_.
+`Scaler <https://github.com/finos/opengris-scaler/>`_ and `Dask <https://www.dask.org/>`_.
 
 
 Content

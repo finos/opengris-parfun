@@ -25,7 +25,7 @@ Issues = "https://github.com/Citi/parfun/issues"
 [project.optional-dependencies]
 pandas = ["pandas"]
 dask = ["dask>=2025.5.1", "distributed>=2025.5.1"]
-scaler = ["scaler"]
+scaler = ["opengris-scaler"]
 
 [tool.setuptools]
 packages = ["parfun"]
