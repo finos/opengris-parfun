@@ -6,7 +6,7 @@ import numpy as np
 try:
     import pandas as pd
 except ImportError:
-    raise ImportError("Pandas dependency missing. Use `pip install 'parfun[pandas]'` to install Pandas.")
+    raise ImportError("Pandas dependency missing. Use `pip install 'opengris-parfun[pandas]'` to install Pandas.")
 
 
 def random_df(rows: int, columns: int, low: int = 0, high: int = 100) -> pd.DataFrame:

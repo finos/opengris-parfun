@@ -7,7 +7,9 @@ try:
     from dask.distributed import Client, Future, LocalCluster, worker_client
     from dask.distributed.client import ClientExecutor
 except ImportError:
-    raise ImportError("Dask dependencies missing. Use `pip install 'parfun[dask]'` to install Dask dependencies.")
+    raise ImportError(
+        "Dask dependencies missing. Use `pip install 'opengris-parfun[dask]'` to install Dask dependencies."
+    )
 
 import psutil
 

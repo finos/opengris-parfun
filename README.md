@@ -17,8 +17,8 @@
     <a href="./LICENSE">
       <img src="https://img.shields.io/github/license/citi/parfun?label=license&colorA=0f1632&colorB=255be3">
     </a>
-    <a href="https://pypi.org/project/parfun/">
-      <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/parfun?colorA=0f1632&colorB=255be3">
+    <a href="https://pypi.org/project/opengris-parfun/">
+      <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/opengris-parfun?colorA=0f1632&colorB=255be3">
     </a>
     <img src="https://api.securityscorecards.dev/projects/github.com/Citi/parfun/badge">
   </p>
@@ -72,8 +72,8 @@ if __name__ == "__main__":
 Install Parfun directly from PyPI:
 
 ```bash
-pip install parfun
-pip install "parfun[pandas,scaler,dask]"  # with optional dependencies
+pip install opengris-parfun
+pip install "opengris-parfun[pandas,scaler,dask]"  # with optional dependencies
 ```
 
 The official documentation is available at [citi.github.io/parfun/](https://citi.github.io/parfun/).

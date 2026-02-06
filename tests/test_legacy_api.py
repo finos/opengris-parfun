@@ -4,7 +4,7 @@ from typing import List
 try:
     import pandas as pd
 except ImportError:
-    raise ImportError("Pandas dependency missing. Use `pip install 'parfun[pandas]'` to install Pandas.")
+    raise ImportError("Pandas dependency missing. Use `pip install 'opengris-parfun[pandas]'` to install Pandas.")
 
 from parfun import parfun
 from parfun.combine.dataframe import df_concat

@@ -5,7 +5,7 @@ from typing import List, cast
 try:
     import pandas as pd
 except ImportError:
-    raise ImportError("Pandas dependency missing. Use `pip install 'parfun[pandas]'` to install Pandas.")
+    raise ImportError("Pandas dependency missing. Use `pip install 'opengris-parfun[pandas]'` to install Pandas.")
 
 import parfun as pf
 from parfun.partition.object import SmartPartitionGenerator
