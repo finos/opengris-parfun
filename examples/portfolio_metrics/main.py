@@ -3,10 +3,12 @@ Based on a portfolio of stocks, computes basic statistics.
 
 Usage:
 
-    $ git clone https://github.com/Citi/parfun && cd parfun
-    $ python -m examples.portfolio_metrics.main
+    $ git clone https://github.com/finos/opengris-parfun && cd parfun
+    $ python -m examples.portfolio_metrics.main [--backend BACKEND] [--backend_args]
 """
 
+import argparse
+import json
 from typing import List
 
 import pandas as pd
@@ -41,6 +43,16 @@ def relative_metrics(portfolio: pd.DataFrame, columns: List[str]) -> pd.DataFram
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--backend", default="local_multiprocessing")
+    parser.add_argument(
+        "--backend_args",
+        type=json.loads,
+        default={},
+        help="JSON backend kwargs, e.g. '{\"n_workers\": 4}'",
+    )
+    args = parser.parse_args()
+
     portfolio = pd.DataFrame({
         "company": ["Apple", "Citigroup", "ASML", "Volkswagen", "Tencent"],
         "industry": ["technology", "banking", "technology", "manufacturing", "manufacturing"],
@@ -50,7 +62,7 @@ if __name__ == "__main__":
         "workforce": [161000, 240000, 39850, 650951, 104503]
     })
 
-    with pf.set_parallel_backend_context("local_multiprocessing"):
+    with pf.set_parallel_backend_context(args.backend, **args.backend_args):
         metrics = relative_metrics(portfolio, ["market_cap", "revenue"])
 
     print(metrics)
