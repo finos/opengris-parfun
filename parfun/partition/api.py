@@ -46,7 +46,7 @@ def per_argument(
 
         generator = partition_map(reassign_partitioned_arguments, zipped)  # type: ignore[type-var]
 
-        return non_partitioned_args, generator
+        return non_partitioned_args, _with_empty_fallback(generator, partitioned_args)
 
     return partitioning_function
 
@@ -93,7 +93,7 @@ def multiple_arguments(
             partition_with(*arg_values),
         )  # type: ignore[type-var]
 
-        return non_partitioned_args, generator
+        return non_partitioned_args, _with_empty_fallback(generator, partitioned_args)
 
     return partitioning_function
 
@@ -131,6 +131,52 @@ def all_arguments(
 
         arg_values = chain(named_args.args.values(), named_args.kwargs.values(), named_args.var_args)
 
-        return NamedArguments(), partition_map(reassign_all_arguments, partition_with(*arg_values))
+        generator = partition_map(reassign_all_arguments, partition_with(*arg_values))  # type: ignore[type-var]
+
+        return NamedArguments(), _with_empty_fallback(generator, named_args)
 
     return partitioning_function
+
+
+def _with_empty_fallback(
+    generator: PartitionGenerator[NamedArguments],
+    fallback_partition: NamedArguments,
+) -> PartitionGenerator[NamedArguments]:
+    """
+    Wraps a partition generator to yield the original function arguments as a single partition if the underlying
+    generator produces zero partitions.
+
+    That's required so that we return at least one partition and call the parallel function at least once.
+    """
+
+    try:
+        first_value = next(generator)
+    except StopIteration:
+        # Regular generator that produced zero values — yield original args
+        yield fallback_partition
+        return
+
+    if first_value is not None:
+        # Regular generator
+        assert isinstance(first_value, NamedArguments)
+
+        yield first_value
+        yield from generator  # type: ignore[arg-type]
+    else:
+        # Smart generator
+        requested_partition_size = yield None
+        try:
+            value = generator.send(requested_partition_size)  # type: ignore[arg-type]
+        except StopIteration:
+            # Smart generator produced zero partitions — yield original args
+            yield 0, fallback_partition
+            return
+
+        requested_partition_size = yield value  # type: ignore[arg-type]
+        while True:
+            try:
+                value = generator.send(requested_partition_size)  # type: ignore[arg-type]
+            except StopIteration:
+                return
+
+            requested_partition_size = yield value  # type: ignore[arg-type]

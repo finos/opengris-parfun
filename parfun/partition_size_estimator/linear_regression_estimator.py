@@ -72,6 +72,9 @@ class LinearRegessionEstimator(PartitionSizeEstimator[LinearRegessionEstimate]):
     def add_partition_trace(self, trace: PartitionedTaskTrace) -> None:
         partition_size = trace.partition_size
 
+        if partition_size < 1:
+            return
+
         tupled_trace = (partition_size, trace.total_duration // partition_size)
 
         if len(self._run_traces) < self.max_traces:

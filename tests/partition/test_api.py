@@ -99,6 +99,42 @@ class TestPartitionAPI(unittest.TestCase):
 
             self.assertSequenceEqual([x * x for x in partition["xs"]], partition["ys"])
 
+    def test_zero_partitions(self):
+        # Validates that per_argument, multiple_argument and all_arguments return the original arguments if the
+        # arguments can't be partitioned in a least one partition.
+
+        empty_args = NamedArguments(kwargs={"xs": [], "ys": []})  # type: ignore
+
+        # per_argument()
+
+        _, per_arg_partition_generator = pf.per_argument(
+            xs=pf.py_list.by_chunk,
+            ys=pf.py_list.by_chunk,
+        )(empty_args)
+        per_arg_partitions = list(with_partition_size(per_arg_partition_generator, partition_size=10))
+
+        self.assertEqual(len(per_arg_partitions), 1)
+        self.assertEqual(per_arg_partitions[0], empty_args)
+
+        # multiple_arguments()
+
+        _, multiple_generator = pf.multiple_arguments(
+            partition_on=("xs", "ys"),
+            partition_with=pf.py_list.by_chunk
+        )(empty_args)
+        multiple_partitions = list(with_partition_size(multiple_generator, partition_size=10))
+
+        self.assertEqual(len(multiple_partitions), 1)
+        self.assertEqual(multiple_partitions[0], empty_args)
+
+        # all_arguments()
+
+        _, all_args_generator = pf.all_arguments(pf.py_list.by_chunk)(empty_args)
+        all_args_partitions = list(with_partition_size(all_args_generator, partition_size=10))
+
+        self.assertEqual(len(all_args_partitions), 1)
+        self.assertEqual(all_args_partitions[0], empty_args)
+
 
 if __name__ == "__main__":
     unittest.main()

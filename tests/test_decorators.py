@@ -169,6 +169,16 @@ class TestDecorators(unittest.TestCase):
         multiple_partition_pids = _parallel_getpid(range(0, 1000))
         self.assertTrue(all(pid != calling_pid for pid in multiple_partition_pids))
 
+    def test_empty_input_dataframe(self):
+        empty_df = pd.DataFrame({
+            "x": pd.Series(dtype="int64"),
+            "y": pd.Series(dtype="int64"),
+        })
+
+        result = _per_argument_sum([], empty_df)
+
+        self.assertTrue(result.equals(empty_df))
+
 
 @pf.parallel(
     split=pf.multiple_arguments(("col1", "col2", "col3"), pf.py_list.by_chunk),
