@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 import attrs
-from attrs.validators import gt, instance_of, optional
+from attrs.validators import ge, instance_of, optional
 
 from parfun.partition_size_estimator.object import PartitionSizeEstimate
 
@@ -23,7 +23,7 @@ class PartitionedTaskTrace:
         validator=optional(instance_of(PartitionSizeEstimate))
     )
 
-    partition_size: int = attrs.field(validator=(instance_of(int), gt(0)))
+    partition_size: int = attrs.field(validator=(instance_of(int), ge(0)))
     partition_duration: TraceTime = attrs.field(validator=instance_of(TraceTime))
 
     task_duration: Optional[TraceTime] = attrs.field(validator=optional(instance_of(TraceTime)), default=None)
