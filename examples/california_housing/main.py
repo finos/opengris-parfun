@@ -5,11 +5,12 @@ Measures the training time when splitting the learning dataset process using Par
 
 Usage:
 
-    $ git clone https://github.com/Citi/parfun && cd parfun
-    $ python -m examples.california_housing.main
+    $ git clone https://github.com/finos/opengris-parfun && cd parfun
+    $ python -m examples.california_housing.main [--backend BACKEND] [--backend_args]
 """
 
-import psutil
+import argparse
+import json
 import timeit
 
 from typing import List
@@ -35,7 +36,7 @@ class MeanRegressor(RegressorMixin):
 
 @pf.parallel(
     split=pf.per_argument(dataframe=pf.dataframe.by_row),
-    combine_with=lambda regressors: MeanRegressor(list(regressors))
+    combine_with=lambda regressors: MeanRegressor(list(regressors)),
 )
 def train_regressor(dataframe: pd.DataFrame, feature_names: List[str], target_name: str) -> RegressorMixin:
 
@@ -46,7 +47,15 @@ def train_regressor(dataframe: pd.DataFrame, feature_names: List[str], target_na
 
 
 if __name__ == "__main__":
-    N_WORKERS = psutil.cpu_count(logical=False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--backend", default="local_multiprocessing")
+    parser.add_argument(
+        "--backend_args",
+        type=json.loads,
+        default={},
+        help="JSON backend kwargs, e.g. '{\"max_workers\": 4}'",
+    )
+    args = parser.parse_args()
 
     dataset = fetch_california_housing(download_if_missing=True)
 
@@ -68,7 +77,7 @@ if __name__ == "__main__":
 
         print("Sequential training duration:", duration)
 
-    with pf.set_parallel_backend_context("local_multiprocessing", max_workers=N_WORKERS):
+    with pf.set_parallel_backend_context(args.backend, **args.backend_args):
         regressor = train_regressor(dataframe, feature_names, target_name)
 
         duration = (

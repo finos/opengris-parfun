@@ -4,13 +4,14 @@ the European electricity grid.
 
 Usage:
 
-    $ git clone https://github.com/Citi/parfun && cd parfun
+    $ git clone https://github.com/finos/opengris-parfun && cd parfun
     $ pip install -r examples/requirements.txt
-    $ python -m examples.europe_electricity.main [--plot]
+    $ python -m examples.europe_electricity.main [--plot] [--backend BACKEND] [--backend_args]
 
 """
 
-import sys
+import argparse
+import json
 from typing import List
 
 import pandas as pd
@@ -155,10 +156,24 @@ def plot_electricity_production(production_percentages: pd.DataFrame) -> None:
 def main():
     YEARS = list(range(2019, 2025))
 
-    with pf.set_parallel_backend_context("local_multiprocessing"):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--plot", action="store_true", help="Plot data instead of printing dataframe")
+    parser.add_argument(
+        "--backend",
+        default="local_multiprocessing",
+    )
+    parser.add_argument(
+        "--backend_args",
+        type=json.loads,
+        default={},
+        help="JSON backend kwargs, e.g. '{\"n_workers\": 4}'",
+    )
+    args = parser.parse_args()
+
+    with pf.set_parallel_backend_context(args.backend, **args.backend_args):
         processed_data = get_monthly_percentage_production(YEARS)
 
-    if "--plot" in sys.argv[1:]:
+    if args.plot:
         plot_electricity_production(processed_data)
     else:
         print(processed_data)
