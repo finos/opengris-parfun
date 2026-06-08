@@ -313,5 +313,5 @@ def _validate_smart_partition_value(value):
 
     partition_size, _ = value
 
-    if not isinstance(partition_size, int) or partition_size < 1:
-        raise ValueError("partition generator should return a strictly positive partition size.")
+    if not isinstance(partition_size, int) or partition_size < 0:
+        raise ValueError("partition generator should return a non-negative partition size.")
