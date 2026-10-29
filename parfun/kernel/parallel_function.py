@@ -14,7 +14,11 @@ from parfun.partition.object import PartitionGenerator
 from parfun.partition_size_estimator.linear_regression_estimator import LinearRegessionEstimator
 from parfun.partition_size_estimator.mixins import PartitionSizeEstimator
 from parfun.profiler.functions import (
-    export_task_trace, print_profile_trace, timed_combine_with, timed_function, timed_partition,
+    export_task_trace,
+    print_profile_trace,
+    timed_combine_with,
+    timed_function,
+    timed_partition,
 )
 from parfun.profiler.object import PartitionedTaskTrace, TraceTime
 
@@ -114,6 +118,7 @@ class ParallelFunction:
             partitions,
             current_backend,
             nested_backend,
+            function_name=self.function_name,
         )
 
         # Combine the results
@@ -166,10 +171,13 @@ def run_function_on_partitions(
     partitions: Generator[Tuple[NamedArguments, PartitionedTaskTrace], None, None],
     backend: BackendEngine,
     nested_backend: Optional[BackendEngine],
+    function_name: Optional[str] = None,
 ) -> Generator[Tuple[FunctionOutputType, TraceTime], None, None]:
     """
     Applies the provided function on all non-partitioned and partitioned arguments using the provided backend.
     """
+
+    worker_function = _WorkerFunction(function, function_name)
 
     # First, tries to get the first 2 partitions. If we get less than 2, we run the function sequentially to avoid
     # any parallelism overhead.
@@ -185,13 +193,7 @@ def run_function_on_partitions(
         assert len(first_values) <= 2
 
         for partitioned_args in first_values:
-            yield timed_function(
-                run_function_in_worker,
-                function,
-                non_partitioned_args,
-                partitioned_args,
-                backend=None,
-            )
+            yield timed_function(worker_function, non_partitioned_args, partitioned_args, backend=None)
 
         return
 
@@ -208,13 +210,7 @@ def run_function_on_partitions(
         try:
             for partitioned_args in chain(first_values, iterator):
                 futures.append(
-                    session.submit(
-                        run_function_in_worker,
-                        function,
-                        preloaded_non_partitioned_args,
-                        partitioned_args,
-                        nested_backend,
-                    )
+                    session.submit(worker_function, preloaded_non_partitioned_args, partitioned_args, nested_backend)
                 )
 
                 # Yields any finished future from the head of the queue.
@@ -228,6 +224,24 @@ def run_function_on_partitions(
             # If any failure, cancels all unfinished tasks.
             for future in futures:
                 future.cancel()
+
+
+class _WorkerFunction:
+    def __init__(
+        self, function: Callable[[PartitionType], FunctionOutputType], function_name: Optional[str] = None
+    ) -> None:
+        self.function = function
+        name = function_name if function_name is not None else function.__name__
+        self.__name__ = name
+        self.__qualname__ = name
+
+    def __call__(
+        self,
+        non_partitioned_args: NamedArguments,
+        partition: Tuple[NamedArguments, PartitionedTaskTrace],
+        backend: Optional[BackendEngine] = None,
+    ) -> Tuple[FunctionOutputType, PartitionedTaskTrace]:
+        return run_function_in_worker(self.function, non_partitioned_args, partition, backend)
 
 
 def run_function_in_worker(
